@@ -12,7 +12,7 @@ import {
   getBuilderSearchParams,
   isPreviewing,
 } from '@builder.io/sdk-react';
-import { BuilderSlider } from '../customComponents/Slider';
+import { customComponents } from '../custom-components';
 
 interface PageProps {
   params: {
@@ -48,7 +48,7 @@ export default async function Page(props: PageProps) {
       model="page"
       content={content}
       apiKey={PUBLIC_API_KEY}
-      customComponents={BuilderSlider} 
+      customComponents={customComponents} 
     />
   );
 }

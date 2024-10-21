@@ -3,108 +3,56 @@
 import {
   Blocks,
   BuilderBlock,
-  RegisteredComponent,
 } from '@builder.io/sdk-react';
-import { Flex, Button } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 
 type Slide = {
-  children: BuilderBlock[];
+  slide: BuilderBlock[];
 };
 
 type ISliderProps = {
-  children: Slide[];
+  slides: Slide[];
   builderBlock: {
     id: string | undefined;
   };
 };
 
-export const Slider = (props: ISliderProps) => {
+export const Slider = (props: any) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [slideDone, setSlideDone] = useState(true);
-
+  console.log("props: ", props);
   useEffect(() => {
     if (slideDone) {
       setSlideDone(false);
       setTimeout(() => {
-        setActiveIndex((current) => current++);
+        setActiveIndex((current) => (current + 1) % props.slides.length);
         setSlideDone(true);
       }, 5000);
     }
-  }, [slideDone]);
-
+  }, [slideDone, props.slides.length]);
+  
   return (
-    <Flex
-      position="relative"
-      width="100%"
-      padding="0"
-      overflow="hidden"
-      justifyContent="flex-start"
-      alignItems="center"
-      direction="row"
-      flexWrap="nowrap"
-      backgroundColor="black"
+    <div
     >
-      {props.children &&
-        props.children.map((item, index) => {
-          return (
+      {props.slides && props.slides.map((item, index) => (
+          <div key={`slide-${props.builderBlock?.id}-${index}`}>
+            
             <Blocks
               parent={props.builderBlock?.id}
-              path={`component.options.slides.${index}.content`}
-              blocks={item.children}
-              key={`slide-${props.builderBlock?.id}-${index}`}
+              path={`component.options.slides.${index}.slide`}
+              blocks={props.slides[index].slide}
             />
-          );
-        })}
-      <Flex
-        gridColumn="left-start / right-end"
-        gridRow="dots-start / dots-end"
-        display="flex"
-        gap={2}
-        justifySelf="center"
-        px={3}
-        py={2}
-        mt={3}
-        color="white"
-        backgroundColor="gray.700"
-        borderRadius="full"
+          </div>
+      ))}
+      <div
       >
-        {props.children &&
-          props.children.map((item, index) => {
-            return (
-              <Button
-                backgroundColor="white"
-                as={motion.div}
-                initial={false}
-                animate={{
-                  scale: activeIndex === index ? 1.25 : 1,
-                  opacity: activeIndex === index ? 1 : 0.5,
-                }}
-                height="6px"
-                width="6px"
-                borderRadius="full"
-                onClick={() => setActiveIndex(index)}
-                key={`slide-${props.builderBlock?.id}-${index}-button`}
-              />
-            );
-          })}
-      </Flex>
-    </Flex>
+        {props.slides && props.slides.map((item, index) => (
+          <button
+            onClick={() => setActiveIndex(index)}
+            key={`dot-${props.builderBlock?.id}-${index}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
-
-export const BuilderSlider: RegisteredComponent[] = [
-  {
-    component: Slider,
-    name: 'Slider',
-    canHaveChildren: true,
-    inputs: [
-      {
-        name: 'slides',
-        type: 'list',
-        subFields: [],
-      },
-    ],
-  },
-];
